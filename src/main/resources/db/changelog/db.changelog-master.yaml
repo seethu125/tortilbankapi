@@ -1,0 +1,103 @@
+databaseChangeLog:
+ -  changeSet:  
+      id: 1_banks  
+      author: seethupb  
+      changes:  
+        -  createTable:  
+            tableName: banks 
+            schemaName: public 
+            columns:  
+              -  column:  
+                  name: id  
+                  type: bigint  
+                  autoIncrement: true  
+                  constraints:  
+                    primaryKey: true  
+                    nullable: false  
+              -  column:  
+                  name: name  
+                  type: varchar(49)
+ - changeSet:  
+      id: branches  
+      author: seethupb  
+      changes:  
+        -  createTable:  
+            tableName: branches  
+            schemaName: public
+            columns:  
+              -  column:  
+                  name: ifsc  
+                  type: varchar(11)  
+                  constraints:  
+                    primaryKey: true  
+                    nullable: false 
+              -  column:  
+                  name: bank_id  
+                  type: bigint
+                  constraints:  
+                    nullable: false  
+                    foreignKeyName: branches_banks_fkey 
+              -  column:  
+                  name: branch  
+                  type: varchar(74)
+                  constraints:  
+                    nullable: false                     
+              -  column:  
+                  name: address  
+                  type: varchar(195)
+                  constraints:  
+                    nullable: false 
+              -  column:  
+                  name: city  
+                  type: varchar(50)
+                  constraints:  
+                    nullable: false
+              -  column:  
+                  name: district  
+                  type: varchar(50)
+                  constraints:  
+                    nullable: false  
+              -  column:  
+                  name: state  
+                  type: varchar(26)
+                  constraints:  
+                    nullable: false              
+ -  changeSet:  
+      id:  1_branches  
+      author:  seethupb  
+      changes: 
+        -  createView:
+             catalogName: bank_branches
+             encoding:  UTF-8  
+             fullDefinition: false       	
+             remarks:  search by bank name  
+             replaceIfExists: false  
+             schemaName: public  
+             selectQuery: select ifsc,br.bank_id, branch, address, city, district, state,b.name as bank_name from banks b inner join branches br on b.id = br.bank_id
+             viewName: bank_branches 
+ -  changeSet:
+      id: loadData-banks    
+      author: seethupb     
+      changes:    
+       -  loadUpdateData: 
+            primaryKey: id   
+            catalogName: banks
+            tableName: banks
+            file: banks.csv
+            schemaName: public 
+            relativeToChangelogFile: true
+            separator: ','  
+            usePreparedStatements: true 
+ -  changeSet:
+      id: loadData-branches    
+      author: seethupb     
+      changes:    
+       -  loadUpdateData: 
+            primaryKey: ifsc   
+            catalogName: branches
+            tableName: branches
+            file: branches.csv
+            schemaName: public 
+            relativeToChangelogFile: true
+            separator: ','  
+            usePreparedStatements: true
